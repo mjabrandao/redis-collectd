@@ -11,7 +11,7 @@ The plugin expects exactly two arguments in the following order:
 ./redis-collectd 127.0.0.1 6379
 </pre>
 
-Since this is used as a collectd plugin, it pulls metrics on a best-effort basis and will fail silent with incorrect command line arguments, fails connections to Redis, and so forth.
+Since this is used as a collectd plugin, it pulls metrics on a best-effort basis and will fail silent with incorrect command line arguments, failed connections to Redis, and so forth.
 
 The plugin honors the `COLLECTD_HOSTNAME` variable passed by collectd and will failover to detecting the system hostname if no value is passed. The metric namespace uses the `port` argument passed in, allowing several Redis instances per-box to be monitored.
 
