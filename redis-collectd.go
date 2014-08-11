@@ -145,7 +145,7 @@ func formatToCollectd(m map[string]string, redisPort string) map[string]string {
 	}
 
 	// Default data type to gauge, regex to change metric to counter
-	counter := regexp.MustCompile("!") // Currently set to none	for simplicity
+	counter := regexp.MustCompile("!") // Currently set to none for simplicity
 
 	formatted := make(map[string]string)
 	for k, v := range m {
