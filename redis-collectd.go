@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // Array of stats we want to extract from Redis INFO
@@ -64,7 +65,7 @@ var statsFilter = []string{
 
 func queryRedis(host, port string) []string {
 	// Dial instance
-	conn, err := net.Dial("tcp", host+":"+port)
+	conn, err := net.DialTimeout("tcp", host+":"+port, time.Duration(3) * time.Second)
 	if err != nil {
 		os.Exit(1)
 	}
