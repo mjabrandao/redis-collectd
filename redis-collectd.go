@@ -107,18 +107,18 @@ func arrayToRegex(a []string) string {
 	return formatted
 }
 
-func filterStats(m map[string]string, r *regexp.Regexp) map[string]string {
+func filterStats(m *map[string]string, r *regexp.Regexp) {
 	// Filter map to match regex
 	stats := make(map[string]string)
-	for k, v := range m {
+	for k, v := range *m {
 		if r.MatchString(k) {
 			stats[k] = v
 		}
 	}
-	return stats
+	*m = stats
 }
 
-func formatToCollectd(m map[string]string, redisPort string) map[string]string {
+func formatToCollectd(m map[string]string, id string) map[string]string {
 	/*
 		Set values to something sane for Collectd/Graphite:
 		E.g. convert null values to 0, OKs to 1 (for drawAsInfinite function),
@@ -152,9 +152,9 @@ func formatToCollectd(m map[string]string, redisPort string) map[string]string {
 	for k, v := range m {
 		switch {
 		case counter.MatchString(k):
-			formatted["PUTVAL "+hostname+"/redis-"+redisPort+"/counter-"+k] = v
+			formatted["PUTVAL "+hostname+"/redis-"+id+"/counter-"+k] = v
 		default:
-			formatted["PUTVAL "+hostname+"/redis-"+redisPort+"/gauge-"+k] = v
+			formatted["PUTVAL "+hostname+"/redis-"+id+"/gauge-"+k] = v
 		}
 	}
 	return formatted
@@ -175,9 +175,8 @@ func main() {
 		redis.port = os.Args[2]
 	}
 
-	// Convert statsFilter list to regexp string
+	// Convert statsFilter list to regexp string and compile
 	statsRegexString := arrayToRegex(statsFilter)
-	// Compile statsFilter regexp
 	statsRegex := regexp.MustCompile(statsRegexString)
 
 	// Get INFO
@@ -185,10 +184,9 @@ func main() {
 	// Convert INFO resp to stats map
 	stats := mapStats(redisInfo)
 	// Filter stats that match statsFilter
-	statsFiltered := filterStats(stats, statsRegex)
-
+	filterStats(&stats, statsRegex)
 	// Format stats for Collectd
-	collectdStats := formatToCollectd(statsFiltered, redis.port)
+	collectdStats := formatToCollectd(stats, redis.port)
 
 	for k, v := range collectdStats {
 		fmt.Println(k, v)
