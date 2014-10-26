@@ -1,7 +1,7 @@
 redis-collectd
 ==============
 
-Redis plugin for collectd. First pass, could use some refactoring and data type updates (see: https://github.mandiant.com/jalquiza/redis-collectd/blob/master/redis-collectd.go#L147-L148)
+Redis plugin for collectd. First pass, could use some refactoring and data type updates.
 
 ### How it works
 
