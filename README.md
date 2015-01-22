@@ -1,7 +1,7 @@
 redis-collectd
 ==============
 
-Redis plugin for collectd. First pass, could use some refactoring and data type updates.
+Redis plugin for collectd. Wrote this to learn Go - it could probably use a refactor.
 
 ### How it works
 
