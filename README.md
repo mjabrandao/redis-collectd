@@ -1,15 +1,11 @@
 redis-collectd
 ==============
 
-Redis plugin for collectd. Wrote this to learn Go - it could probably use a refactor.
+Redis plugin for collectd.
+
+Based on https://github.com/jamiealquiza/redis-collectd, but adding the host so we can collect stats per host and port.
 
 ### How it works
-
-The plugin expects exactly two arguments in the following order:
-
-<pre>
-./redis-collectd 127.0.0.1 6379
-</pre>
 
 Since this is used as a collectd plugin, it pulls metrics on a best-effort basis and will fail silent with incorrect command line arguments, failed connections to Redis, and so forth.
 
@@ -21,15 +17,15 @@ Build / place binary in your plugin path. Example:
 <pre>
 go build redis-collectd.go
 cp redis-collectd /opt/collectd/lib/collectd/
-chown collectd:collectd /opt/collectd/lib/collectd/redis-collectd
+chown root:root /opt/collectd/lib/collectd/redis-collectd
 </pre>
 
 In collectd.conf:
 <pre>
 LoadPlugin exec
-&lt;Plugin exec&gt;
-  Exec "collectd" "/opt/collectd/lib/collectd/redis-collectd" "127.0.0.1" "6379"
-&lt;/Plugin&gt;
+<Plugin exec>
+  Exec "nobody" "/opt/collectd/lib/collectd/redis-collectd" "127.0.01.1" "6379"
+</Plugin>
 </pre>
 
 ### Example output

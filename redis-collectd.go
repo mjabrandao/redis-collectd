@@ -139,7 +139,7 @@ func filterStats(m *map[string]string, r *regexp.Regexp) {
 	*m = stats
 }
 
-func formatToCollectd(m map[string]string, id string) map[string]string {
+func formatToCollectd(m map[string]string, host string, id string) map[string]string {
 	/*
 		Set values to something sane for Collectd/Graphite:
 		E.g. convert null values to 0, OKs to 1 (for drawAsInfinite function),
@@ -173,9 +173,9 @@ func formatToCollectd(m map[string]string, id string) map[string]string {
 	for k, v := range m {
 		switch {
 		case counter.MatchString(k):
-			formatted["PUTVAL "+hostname+"/redis-"+id+"/counter-"+k] = v
+			formatted["PUTVAL "+hostname+"/redis-"+host+"-"+id+"/counter-"+k] = v
 		default:
-			formatted["PUTVAL "+hostname+"/redis-"+id+"/gauge-"+k] = v
+			formatted["PUTVAL "+hostname+"/redis-"+host+"-"+id+"/gauge-"+k] = v
 		}
 	}
 	return formatted
@@ -200,6 +200,8 @@ func main() {
 	statsRegexString := arrayToRegex(statsFilter)
 	statsRegex := regexp.MustCompile(statsRegexString)
 
+	// Sleep 58 seconds to prevent gaps when collecting info per minute
+	time.Sleep(58 * time.Second)
 	// Get INFO
 	redisInfo := queryRedis(redis.host, redis.port)
 	// Convert INFO resp to stats map
@@ -207,7 +209,7 @@ func main() {
 	// Filter stats that match statsFilter
 	filterStats(&stats, statsRegex)
 	// Format stats for Collectd
-	collectdStats := formatToCollectd(stats, redis.port)
+	collectdStats := formatToCollectd(stats, redis.host, redis.port)
 
 	for k, v := range collectdStats {
 		fmt.Println(k, v)
